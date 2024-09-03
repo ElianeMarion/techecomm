@@ -63,4 +63,34 @@ public class ProductService {
         return product;
     }
 
+
+    public Product hasProductInStock(Long productId, int totalRequired) {
+        Product product = this.findProductById(productId);
+        if (product.getQuantityStock() < totalRequired) throw new NoStockProduct(totalRequired);
+        return product;
+    }
+
+    public ResponseResult<Boolean> reserveProduct(Long productId, int totalRequired) {
+        try {
+            Product product = this.hasProductInStock(productId, totalRequired);
+            product.setQuantityStock(product.getQuantityStock() - totalRequired);
+            this.updateStockProduct(product);
+            return new ResponseResult<>(true, "Success reserved!");
+        } catch (RuntimeException e) {
+            return new ResponseResult<>(false, e.getMessage());
+        }
+    }
+
+    private Product updateStockProduct(Long productId, int quantityStock) {
+        Product product = this.findProductById(productId);
+        product.setQuantityStock(quantityStock);
+        this.updateProduct(product);
+        return product;
+    }
+
+    private void updateStockProduct(Product product) {
+        Product productUpdated = this.updateStockProduct(product.getProductId(), product.getQuantityStock());
+        System.out.println("Stock updated: " + productUpdated);
+    }
+
 }
