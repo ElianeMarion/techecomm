@@ -27,7 +27,7 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public UserRecord findById(UUID userId) {
+    public UserRecord findById(Long userId) {
         UserLogin user = userRepository.findById(userId)
                 .orElseThrow(() -> new ControllerNotFoundException("Usuario nao encontrado"));
         return toDTO(user);
@@ -43,7 +43,8 @@ public class UserService {
                 .toList();
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(userDTO.password());
-        UserLogin newUser = new UserLogin(userDTO.login(),
+        UserLogin newUser = new UserLogin(
+                userDTO.login(),
                 userDTO.name(), userDTO.email(),
                 encryptedPassword, roles);
 
@@ -52,7 +53,7 @@ public class UserService {
         return toDTO(newUser);
     }
 
-    public UserRecord update(UUID userId, UserRecord userDTO) {
+    public UserRecord update(Long userId, UserRecord userDTO) {
         try {
             UserLogin user = userRepository.getReferenceById(userId);
             user.setName((userDTO.name()));
@@ -64,7 +65,7 @@ public class UserService {
         }
     }
 
-    public void delete (UUID userId) {
+    public void delete (Long userId) {
         userRepository.deleteById(userId);
     }
 

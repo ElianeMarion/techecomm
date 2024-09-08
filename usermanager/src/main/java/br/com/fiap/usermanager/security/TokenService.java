@@ -31,6 +31,7 @@ public class TokenService {
                     .collect(Collectors.joining(","));
             String token = JWT.create()
                     .withIssuer("auth-api")
+                    .withClaim("userId", user.getUserId())
                     .withSubject(user.getLogin())
                     .withClaim("roles", roles)
                     .withExpiresAt(genExpirationDate())
