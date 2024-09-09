@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class UserLogin implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
-    private UUID userId;
+    private Long userId;
 
     @Column(name = "LOGIN")
     private String login;

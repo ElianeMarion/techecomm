@@ -1,0 +1,32 @@
+services:
+
+  database:
+    image: mysql:8.0.36
+    env_file: ./env/.env
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    ports:
+      - 3366:3306
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+    env_file: ./env/.env
+    restart: no
+    ports:
+      - 8083:8083
+      - 5005:5005
+    depends_on:
+      database:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  mysql-data:

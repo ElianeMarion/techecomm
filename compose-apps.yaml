@@ -1,0 +1,152 @@
+services:
+
+  # MICROSSERVIÇO USERS
+  app_users:
+    image: "users:latest"
+    build:
+      ./usermanager
+    container_name: appusers
+    depends_on:
+      db_users:
+        condition: service_healthy
+    restart: always
+    ports:
+      - "8012:8012"
+    environment:
+      - server.port=8012
+      - spring.datasource.username=fiapecomm
+      - spring.datasource.password=fiapecomm
+      - spring.datasource.url = jdbc:postgresql://host.docker.internal:5432/fiap_ecomm_users
+      - spring.datasource.driver-class-name=org.postgresql.Driver
+      - spring.jpa.defer-datasource-initialization=true
+      - spring.jpa.database=postgresql
+      - spring.jpa.hibernate.show-sql=true
+      - spring.jpa.hibernate.ddl-auto=update
+      - spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+      - spring.sql.init.mode=always
+      - api.security.token.secret=mytoken
+#      - URL_MS_ORDER=http://host.docker.internal:8083/orders
+    networks:
+      - fiap_ecommerce
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # BANCO DE DADOS USERS
+  db_users:
+    image: postgres:16.2
+    container_name: db_users
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=fiapecomm
+      - POSTGRES_PASSWORD=fiapecomm
+      - POSTGRES_DB=fiap_ecomm_users
+      - PGUSER=postgres
+    volumes:
+      - db_users_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -h db_users"
+      interval: 3s
+      timeout: 5s
+      retries: 5
+#      start_period: 10s
+    networks:
+      - fiap_ecommerce
+
+
+  # MICROSSERVIÇO PRODUCTS
+  app_products:
+    image: "products:latest"
+    build:
+      ./products
+    container_name: appproducts
+    restart: always
+    depends_on:
+      db_products:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+    environment:
+      - server.port=8082
+      - spring.datasource.username=postgres
+      - spring.datasource.password=postgres
+      - spring.datasource.url=jdbc:postgresql://host.docker.internal:5433/products
+      - spring.datasource.driver-class-name=org.postgresql.Driver
+      - spring.jpa.database=postgresql
+      - spring.jpa.hibernate.show-sql=true
+      - spring.jpa.hibernate.ddl-auto=create
+      - api.security.token.secret=mytoken
+#      - URL_MS_ORDER=http://host.docker.internal:8083/orders
+    networks:
+      - fiap_ecommerce
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # BANCO DE DADOS DE PRODUCTS
+  db_products:
+    image: postgres:16.2
+    container_name: db_products
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=products
+      - PGUSER=postgres
+    volumes:
+      - db_products_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -h db_products"
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fiap_ecommerce
+
+
+  # MICROSSERVIÇO SHOPPING-CART
+  app_shopping_card:
+    build:
+      context: ./shopping-cart
+    env_file: ./shopping-cart/env/.env
+    container_name: appshoppingcard
+    restart: no
+    ports:
+      - 8083:8083
+      - 5005:5005
+    depends_on:
+      db_shopping_cart:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # BANCO DE DADOS DE SHOPPING-CART
+  db_shopping_cart:
+    image: mysql:8.0.36
+    container_name: db_shopping_cart
+    env_file: ./shopping-cart/env/.env
+    volumes:
+      - shopping_cart_db_volume:/var/lib/mysql
+    restart: unless-stopped
+    ports:
+      - 3366:3306
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - fiap_ecommerce
+
+
+
+networks:
+  fiap_ecommerce:
+    name: fiap_ecommerce
+    driver: bridge
+
+volumes:
+  db_users_volume:
+  db_products_volume:
+  shopping_cart_db_volume:
