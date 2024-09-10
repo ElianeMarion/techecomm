@@ -1,4 +1,4 @@
-package br.com.fiap.techecomm.products.security;
+package br.com.fiap.techecomm.shoppingcart.security;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,7 +73,6 @@ public class UserAuthDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 
     public static Optional<UserAuthDetails> validUserIdAuth(Authentication authentication, Long userId) {
         return Optional.ofNullable(authentication)

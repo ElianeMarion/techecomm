@@ -11,3 +11,5 @@ spring:
         default_schema: ${MYSQL_DATABASE}
     hibernate:
       ddl-auto: update
+
+api.security.token.secret: mytoken

@@ -5,7 +5,7 @@ spring:
   datasource:
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
-    url: jdbc:mysql://database:${MYSQL_EXTERNAL_PORT}/${MYSQL_DATABASE}?createDatabaseIfNotExist=true
+    url: jdbc:mysql://host.docker.internal:${MYSQL_EXTERNAL_PORT}/${MYSQL_DATABASE}?createDatabaseIfNotExist=true
   jpa:
     properties:
       hibernate:
@@ -14,3 +14,5 @@ spring:
         default_schema: ${MYSQL_DATABASE}
     hibernate:
       ddl-auto: update
+
+api.security.token.secret: mytoken
