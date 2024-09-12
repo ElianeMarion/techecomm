@@ -238,7 +238,7 @@ curl --location 'http://localhost:8082/products/reserve' \
 
 #### Inserir produto no carrinho do usuário
 ````
-curl --location 'http://localhost:8083/shopping-cart/add-cart-item/9999999' \
+curl --location 'http://localhost:8083/shopping-cart/9999999' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInVzZXJJZCI6OTk5OTk5OSwic3ViIjoiYWRtaW4iLCJyb2xlcyI6IlJPTEVfQURNSU4iLCJleHAiOjE3Mjg1NDI2NDd9.dhDDotPgrNcaNH5fsUxvktVJDtZw1afobvv1zagvA0g' \
 --data '{
