@@ -255,6 +255,14 @@ curl --location 'http://localhost:8083/shopping-cart/9999999' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInVzZXJJZCI6OTk5OTk5OSwic3ViIjoiYWRtaW4iLCJyb2xlcyI6IlJPTEVfQURNSU4iLCJleHAiOjE3Mjg1NDI2NDd9.dhDDotPgrNcaNH5fsUxvktVJDtZw1afobvv1zagvA0g'
 ````
 
+#### Solicitar pagamento do carrinho
+````
+curl --location --request POST 'http://localhost:8083/shopping-cart/checkout/9999999' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLWFwaSIsInVzZXJJZCI6OTk5OTk5OSwic3ViIjoiYWRtaW4iLCJyb2xlcyI6IlJPTEVfQURNSU4iLCJleHAiOjE3Mjg1NDI2NDd9.dhDDotPgrNcaNH5fsUxvktVJDtZw1afobvv1zagvA0g'
+````
+
+
+
 ##
 ### Microsserviço paymentsAPI
 

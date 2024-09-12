@@ -9,16 +9,20 @@
         <outputRelativeToContentRoot value="true" />
         <module name="usermanager" />
         <module name="pagamentosAPI" />
-        <module name="shoppingcart" />
+        <module name="shoppingcart (1) (br.com.fiap.shoppingcart)" />
         <module name="products" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="shoppingcart" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="pagamentosAPI" options="-parameters" />
       <module name="products" options="-parameters" />
       <module name="shoppingcart" options="-parameters" />
+      <module name="shoppingcart (1) (br.com.fiap.shoppingcart)" options="-parameters" />
       <module name="usermanager" options="-parameters" />
     </option>
   </component>

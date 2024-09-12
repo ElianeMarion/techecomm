@@ -1,0 +1,60 @@
+services:
+
+  # MICROSSERVIÇO PAYMENTS
+  app_shoppingcart:
+    image: "users:latest"
+    build:
+      ./shoppingcart
+    container_name: shoppingcart
+    depends_on:
+      db_shopping_cart:
+        condition: service_healthy
+    restart: always
+    ports:
+      - "8083:8083"
+    environment:
+      - server.port=8083
+      - spring.datasource.url=jdbc:postgresql://host.docker.internal:5434/shoppingcart
+      - spring.datasource.username=cartuser
+      - spring.datasource.password=cartpass
+      - spring.jpa.hibernate.ddl-auto=update
+      - spring.batch.jdbc.initialize-schema=always
+      - spring.sql.init.mode=always
+      - api.security.token.secret=mytoken
+      - URL_PRODUCT=http://host.docker.internal:8082/products
+      - URL_PAYMENT=http://host.docker.internal:8084/pagamentos
+    networks:
+      - fiap_ecommerce
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # BANCO DE DADOS CART
+  db_shopping_cart:
+    image: postgres:16.2
+    container_name: db_shoppingcart
+    restart: always
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=cartuser
+      - POSTGRES_PASSWORD=cartpass
+      - POSTGRES_DB=shoppingcart
+      - PGUSER=postgres
+    volumes:
+      - db_shoppingcart_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -h db_shopping_cart"
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fiap_ecommerce
+
+networks:
+  fiap_ecommerce:
+    name: fiap_ecommerce
+    driver: bridge
+    external: true
+
+volumes:
+  db_shoppingcart_volume:
