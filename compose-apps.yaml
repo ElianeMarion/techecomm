@@ -140,6 +140,56 @@ services:
       - fiap_ecommerce
 
 
+  # MICROSSERVIÇO PAYMENTS
+  app_payments:
+    image: "users:latest"
+    build:
+      ./pagamentosAPI
+    container_name: paymemnts
+    depends_on:
+      db_payments:
+        condition: service_healthy
+    restart: always
+    ports:
+      - "8084:8084"
+    environment:
+      - server.port=8084
+      - spring.datasource.url=jdbc:postgresql://host.docker.internal:5434/mydatabase
+      - spring.datasource.username=myuser
+      - spring.datasource.password=secret
+      - spring.jpa.hibernate.ddl-auto=update
+      - spring.batch.jdbc.initialize-schema=always
+      - spring.sql.init.mode=always
+      - api.security.token.secret=mytoken
+      # - URL_MS_ORDER=http://host.docker.internal:8083/orders
+    networks:
+      - fiap_ecommerce
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # BANCO DE DADOS USERS
+  db_payments:
+    image: postgres:16.2
+    container_name: db_payments
+    restart: always
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=mydatabase
+      - PGUSER=postgres
+    volumes:
+      - db_payments_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -h db_payments"
+      interval: 3s
+      timeout: 5s
+      retries: 5
+      #start_period: 10s
+    networks:
+      - fiap_ecommerce
+
 
 networks:
   fiap_ecommerce:
@@ -150,3 +200,4 @@ volumes:
   db_users_volume:
   db_products_volume:
   shopping_cart_db_volume:
+  db_payments_volume:
